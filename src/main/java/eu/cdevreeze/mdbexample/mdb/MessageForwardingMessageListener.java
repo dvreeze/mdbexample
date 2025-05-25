@@ -52,7 +52,7 @@ public class MessageForwardingMessageListener implements MessageListener {
     private static final Logger logger = Logger.getLogger(MessageForwardingMessageListener.class.getName());
 
     @Inject
-    @JMSConnectionFactory("ConnectionFactory")
+    @JMSConnectionFactory("jms/connectionFactory")
     private JMSContext jmsContext;
 
     @Resource

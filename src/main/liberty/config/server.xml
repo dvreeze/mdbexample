@@ -38,7 +38,7 @@
 
     <jmsConnectionFactory
             connectionManagerRef="CM"
-            jndiName="ConnectionFactory">
+            jndiName="jms/connectionFactory">
         <properties.wmqjmsra
                 hostName="${ibmmq-hostname}"
                 port="${ibmmq-port}"

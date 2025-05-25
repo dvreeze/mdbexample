@@ -51,10 +51,15 @@ article would be quite similar.
 
 Then it would make sense to consider *(local) JMS transactions*. See for example
 [local JMS transactions](https://developer.ibm.com/articles/an-introduction-to-local-transactions-using-mq-and-jms/).
-It is important to understand the *scope* of transactions in a JMS context, and how a *rollback* can
-lead to *redelivery* (and even infinite redelivery depending on MQ configuration and/or message headers).
+It is important to understand the *scope* of transactions in a JMS context, and how a *rollback* of
+a "message handler transaction" can lead to *redelivery* (and even infinite redelivery depending on MQ configuration
+and/or message headers).
 
 Next it is needed to get some familiarity with *distributed transactions*, spanning multiple transactional
 resources, such as a messaging server and a database. Some background on that can be found when
 studying *JTA* (see for example several Jakarta EE specifications, and/or study Spring's *PlatformTransactionManager*
 API and its implementations).
+
+Note how the JMS specification and in particular the EJB specification are quite prescriptive about how to
+use and not to use the JMS API w.r.t. transaction management. Transactions can be *container-managed* or *bean-managed*,
+and we should be familiar with both styles of coding transaction management in a JMS context.
