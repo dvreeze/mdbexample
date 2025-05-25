@@ -1,0 +1,70 @@
+<server description="MDB example service">
+
+    <featureManager>
+        <platform>jakartaee-10.0</platform>
+        <platform>microprofile-7.0</platform>
+        <feature>restfulWS</feature>
+        <feature>cdi</feature>
+        <feature>jsonb</feature>
+        <feature>mpHealth</feature>
+        <feature>mpConfig</feature>
+        <feature>messaging</feature>
+        <feature>messagingClient</feature>
+        <feature>messagingServer</feature>
+        <feature>enterpriseBeans</feature> <!-- Not enterpriseBeansLite? -->
+        <feature>mdb</feature>
+    </featureManager>
+
+    <variable name="http.port" defaultValue="9081"/>
+    <variable name="https.port" defaultValue="9444"/>
+
+    <httpEndpoint id="defaultHttpEndpoint" host="*"
+                  httpPort="${http.port}" httpsPort="${https.port}"/>
+
+    <wasJmsEndpoint id="InboundJmsCommsEndpoint"
+                    host="*"
+                    wasJmsPort="7277"
+                    wasJmsSSLPort="9101"/>
+
+    <jmsQueue id="MdbExampleQueue" jndiName="jms/MdbExampleQueue">
+        <properties.wmqjmsra baseQueueName="${ibmmq-mdb-example-queue-name}"/>
+    </jmsQueue>
+
+    <jmsQueue id="MdbExampleCopiedQueue" jndiName="jms/MdbExampleCopiedQueue">
+        <properties.wmqjmsra baseQueueName="${ibmmq-mdb-example-copied-queue-name}"/>
+    </jmsQueue>
+
+    <connectionManager id="CM" maxPoolSize="400" minPoolSize="1"/>
+
+    <jmsConnectionFactory
+            connectionManagerRef="CM"
+            jndiName="ConnectionFactory">
+        <properties.wmqjmsra
+                hostName="${ibmmq-hostname}"
+                port="${ibmmq-port}"
+                channel="${ibmmq-channel}"
+                queueManager="${ibmmq-queue-manager}"
+                userName="${ibmmq-username}"
+                password="${ibmmq-password}"
+                transportType="CLIENT" />
+    </jmsConnectionFactory>
+
+    <jmsActivationSpec id="mdbexample/MessageForwardingMessageListener">
+        <properties.wmqjmsra
+                hostName="${ibmmq-hostname}"
+                port="${ibmmq-port}"
+                channel="${ibmmq-channel}"
+                queueManager="${ibmmq-queue-manager}"
+                userName="${ibmmq-username}"
+                password="${ibmmq-password}"
+                transportType="CLIENT"/>
+    </jmsActivationSpec>
+
+    <resourceAdapter id="wmqjmsra"
+                     location="https://repo.maven.apache.org/maven2/com/ibm/mq/wmq.jakarta.jmsra/9.4.0.0/wmq.jakarta.jmsra-9.4.0.0.rar"/>
+
+    <logging consoleLogLevel="INFO"/>
+
+    <webApplication location="mdbexample.war" contextRoot="/"/>
+
+</server>
