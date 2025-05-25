@@ -16,6 +16,7 @@
 
 package eu.cdevreeze.mdbexample.mdb;
 
+import eu.cdevreeze.mdbexample.exception.DummyApplicationException;
 import jakarta.annotation.Resource;
 import jakarta.ejb.ActivationConfigProperty;
 import jakarta.ejb.EJBException;
@@ -24,7 +25,9 @@ import jakarta.ejb.MessageDrivenContext;
 import jakarta.inject.Inject;
 import jakarta.jms.*;
 
+import java.time.Instant;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
@@ -51,6 +54,9 @@ public class MessageForwardingMessageListener implements MessageListener {
 
     private static final Logger logger = Logger.getLogger(MessageForwardingMessageListener.class.getName());
 
+    private static final String START_FLAKY = "[start flaky]";
+    private static final String STOP_FLAKY = "[stop flaky]";
+
     @Inject
     @JMSConnectionFactory("jms/connectionFactory")
     private JMSContext jmsContext;
@@ -60,6 +66,8 @@ public class MessageForwardingMessageListener implements MessageListener {
 
     @Resource(lookup = "jms/MdbExampleCopiedQueue")
     private Queue copyQueue;
+
+    private AtomicBoolean flaky = new AtomicBoolean(false);
 
     @Override
     public void onMessage(Message message) {
@@ -79,6 +87,8 @@ public class MessageForwardingMessageListener implements MessageListener {
 
                 // Sending the message in the same JMS Session and transaction (so may be rolled back)
                 jmsContext.createProducer().send(copyQueue, messageText);
+
+                processFlakiness(messageText);
             } else {
                 logger.warning("Unsupported message type: " + message.getClass().getName());
             }
@@ -89,5 +99,21 @@ public class MessageForwardingMessageListener implements MessageListener {
         }
 
         logger.info("Leaving MessageForwardingMessageListener.onMessage (without throwing any exceptions)");
+    }
+
+    private void processFlakiness(String messageText) {
+        if (messageText.equals(START_FLAKY)) {
+            flaky.set(true);
+        } else if (messageText.equals(STOP_FLAKY)) {
+            flaky.set(false);
+        }
+
+        if (flaky.get()) {
+            if (Instant.now().getEpochSecond() % 10L == 0) {
+                // Rollback
+                logger.warning("Rolling back (due to artificial flakiness)");
+                throw new DummyApplicationException();
+            }
+        }
     }
 }
