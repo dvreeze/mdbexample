@@ -57,6 +57,9 @@ public class MessageForwardingMessageListener implements MessageListener {
     private static final String START_FLAKY = "[start flaky]";
     private static final String STOP_FLAKY = "[stop flaky]";
 
+    // This injected JMSContext (Connection + Session) can be seen as a transactional context
+    // Note how re-using this same JMSContext means working within the same transaction
+
     @Inject
     @JMSConnectionFactory("jms/connectionFactory")
     private JMSContext jmsContext;
@@ -67,11 +70,12 @@ public class MessageForwardingMessageListener implements MessageListener {
     @Resource(lookup = "jms/MdbExampleCopiedQueue")
     private Queue copyQueue;
 
-    private AtomicBoolean flaky = new AtomicBoolean(false);
+    private final AtomicBoolean flaky = new AtomicBoolean(false);
 
     @Override
     public void onMessage(Message message) {
         // See https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#example-using-the-simplified-api-and-injection-4
+        // for a similar example, where sending the message occurs in the same transaction running method onMessage.
 
         logger.info("Entering MessageForwardingMessageListener.onMessage");
 
