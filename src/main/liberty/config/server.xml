@@ -72,6 +72,14 @@
 
     <webApplication location="mdbexample.war" contextRoot="/"/>
 
+    <!-- See https://blog.sebastian-daschner.com/entries/openliberty-with-postgres -->
+    <!-- After all, we want PostgreSQL to use as an XA resource in distributed JTA transactions -->
+
+    <jdbcDriver id="postgresqlDriver"
+                javax.sql.XADataSource="org.postgresql.xa.PGXADataSource"
+                javax.sql.ConnectionPoolDataSource="org.postgresql.ds.PGConnectionPoolDataSource"
+                libraryRef="postgresJDBCLib"/>
+
     <!-- PostgreSQL Library Configuration -->
     <library id="postgresJDBCLib">
         <fileset dir="${shared.resource.dir}/" includes="postgres*.jar" />
@@ -79,9 +87,12 @@
 
     <!-- Datasource Configuration -->
     <!-- See https://openliberty.io/docs/latest/relational-database-connections-JDBC.html -->
-    <dataSource id="messagejpadatasource" jndiName="jdbc/messagejpadatasource">
-        <jdbcDriver libraryRef="postgresJDBCLib" />
-        <properties.postgresql serverName="localhost" portNumber="5432"
+    <dataSource id="messageJpaDatasource" jndiName="jdbc/messageJpaDatasource"
+                jdbcDriverRef="postgresqlDriver"
+                type="javax.sql.ConnectionPoolDataSource"
+                transactional="true">
+        <properties.postgresql serverName="localhost"
+                               portNumber="5432"
                                databaseName="messagedb"
                                user="postgres"
                                password="postgres"/>
