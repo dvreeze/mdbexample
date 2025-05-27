@@ -13,6 +13,7 @@
         <feature>messagingServer</feature>
         <feature>enterpriseBeans</feature> <!-- Not enterpriseBeansLite? -->
         <feature>mdb</feature>
+        <feature>persistence</feature>
     </featureManager>
 
     <variable name="http.port" defaultValue="9081"/>
@@ -70,5 +71,21 @@
     <logging consoleLogLevel="INFO"/>
 
     <webApplication location="mdbexample.war" contextRoot="/"/>
+
+    <!-- PostgreSQL Library Configuration -->
+    <library id="postgresJDBCLib">
+        <fileset dir="${shared.resource.dir}/" includes="postgres*.jar" />
+    </library>
+
+    <!-- Datasource Configuration -->
+    <!-- See https://openliberty.io/docs/latest/relational-database-connections-JDBC.html -->
+    <dataSource id="messagejpadatasource" jndiName="jdbc/messagejpadatasource">
+        <jdbcDriver libraryRef="postgresJDBCLib" />
+        <properties.postgresql serverName="localhost" portNumber="5432"
+                               databaseName="messagedb"
+                               user="postgres"
+                               password="postgres"/>
+        <!-- OK, this password is not really a secret one -->
+    </dataSource>
 
 </server>

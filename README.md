@@ -10,7 +10,8 @@ Other message-driven beans in the project are more simple than the one mentioned
 
 ## Creating this project
 
-To bootstrap the project, the [Open Liberty JMS Guide](https://openliberty.io/guides/jms-intro.html) was used.
+To bootstrap the project, the [Open Liberty JMS Guide](https://openliberty.io/guides/jms-intro.html) was used. Also, the
+[Open Liberty JPA Guide](https://openliberty.io/guides/jpa-intro.html) was used.
 
 ## Running this project
 
@@ -39,6 +40,50 @@ docker run \
 Also see the [IBM MQ Developer Essentials](https://developer.ibm.com/learningpaths/ibm-mq-badge/),
 for example for more information on the [MQ Console](https://developer.ibm.com/learningpaths/ibm-mq-badge/setup-use-ibm-mq-console/)
 which is also needed to interact with the message-driven beans in the web application.
+
+We also need a PostgreSQL database:
+
+```shell
+docker pull postgres
+
+mkdir ~/postgresdata
+
+# Note we do not create any volume, in order to avoid "role does not exist" issues.
+
+docker run -d \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=postgres \
+  -p 5432:5432 \
+  -v ~/postgresdata:/var/lib/postgresql/data \
+  --name postgresql \
+  postgres
+
+docker exec -it postgresql psql -U postgres
+
+# We are now inside the running postgresql container, inside psql
+
+CREATE DATABASE messagedb;
+# Check database "messagedb" exists
+\list
+
+\c messagedb;
+
+# It seems auto-creation of tables does not happen. Let's do so manually.
+
+CREATE SEQUENCE message_id_seq INCREMENT BY 1 NO MAXVALUE NO MINVALUE CACHE 1;
+ALTER TABLE public.message_id_seq OWNER TO postgres;
+
+CREATE TABLE message (
+    id integer DEFAULT nextval('message_id_seq'::regclass) NOT NULL,
+    creation_time timestamp without time zone DEFAULT now() NOT NULL,
+    message_text text NOT NULL
+);
+ALTER TABLE public.message OWNER TO postgres;
+
+# Leaving psql and the container
+exit
+```
 
 ## Background on transactions
 

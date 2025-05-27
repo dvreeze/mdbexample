@@ -47,6 +47,12 @@
             <type>pom</type>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.7.5</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- For tests -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -74,6 +80,15 @@
                 <groupId>io.openliberty.tools</groupId>
                 <artifactId>liberty-maven-plugin</artifactId>
                 <version>3.11.3</version>
+                <configuration>
+                    <copyDependencies>
+                        <location>${project.build.directory}/liberty/wlp/usr/shared/resources</location>
+                        <dependency>
+                            <groupId>org.postgresql</groupId>
+                            <artifactId>postgresql</artifactId>
+                        </dependency>
+                    </copyDependencies>
+                </configuration>
             </plugin>
 
             <!-- Plugin to run unit tests -->

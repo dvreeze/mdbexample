@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-package eu.cdevreeze.mdbexample.ws;
+package eu.cdevreeze.mdbexample.model;
 
-import jakarta.enterprise.context.RequestScoped;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
+import java.time.Instant;
 
 /**
- * Welcome page resource.
+ * Immutable Message record.
  *
  * @author Chris de Vreeze
  */
-@RequestScoped
-@Path("/welcome")
-public class WelcomeResource {
-
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String welcome() {
-        return "Welcome to the MDB example application";
-    }
+public record Message(
+        long id,
+        Instant timestamp,
+        String messageText
+) {
 }
