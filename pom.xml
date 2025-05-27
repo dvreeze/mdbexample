@@ -23,7 +23,8 @@
         <liberty.var.ibmmq-username>app</liberty.var.ibmmq-username>
         <liberty.var.ibmmq-password>passw0rd</liberty.var.ibmmq-password>
         <liberty.var.ibmmq-mdb-example-queue-name>DEV.QUEUE.1</liberty.var.ibmmq-mdb-example-queue-name>
-        <liberty.var.ibmmq-mdb-example-copied-queue-name>DEV.QUEUE.2</liberty.var.ibmmq-mdb-example-copied-queue-name>
+        <liberty.var.ibmmq-mdb-example-second-queue-name>DEV.QUEUE.2</liberty.var.ibmmq-mdb-example-second-queue-name>
+        <liberty.var.ibmmq-mdb-example-third-queue-name>DEV.QUEUE.3</liberty.var.ibmmq-mdb-example-third-queue-name>
     </properties>
 
     <dependencies>

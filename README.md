@@ -60,6 +60,12 @@ resources, such as a messaging server and a database. Some background on that ca
 studying *JTA* (see for example several Jakarta EE specifications, and/or study Spring's *PlatformTransactionManager*
 API and its implementations).
 
+We normally expect transactions to be atomic (the "A" in ACID), but this gets more complicated if non-transactional
+resources (such as a remote file share) are part of the atomic "transaction". See
+[Binding non-transactional resources into JTA transactions](https://www.maxant.ch/2015/08/11/1439322480000/)
+to get an idea of complexities involved. Still, this is also something to think about when creating
+(transactional) message-driven beans.
+
 Note how the JMS specification and in particular the EJB specification are quite prescriptive about how to
 use and not to use the JMS API w.r.t. transaction management. Transactions can be *container-managed* or *bean-managed*,
 and we should be familiar with both styles of coding transaction management in a JMS context.

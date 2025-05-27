@@ -16,18 +16,12 @@
 
 package eu.cdevreeze.mdbexample.mdb;
 
-import eu.cdevreeze.mdbexample.exception.DummyApplicationException;
 import jakarta.annotation.Resource;
-import jakarta.ejb.ActivationConfigProperty;
-import jakarta.ejb.EJBException;
-import jakarta.ejb.MessageDriven;
-import jakarta.ejb.MessageDrivenContext;
+import jakarta.ejb.*;
 import jakarta.inject.Inject;
 import jakarta.jms.*;
 
-import java.time.Instant;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 /**
@@ -50,12 +44,11 @@ import java.util.logging.Logger;
                         propertyName = "destinationType", propertyValue = "jakarta.jms.Queue")
         }
 )
+// TransactionManagement annotation value and even annotation itself can be left implicit, since this is the default
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class MessageForwardingMessageListener implements MessageListener {
 
     private static final Logger logger = Logger.getLogger(MessageForwardingMessageListener.class.getName());
-
-    private static final String START_FLAKY = "[start flaky]";
-    private static final String STOP_FLAKY = "[stop flaky]";
 
     // This injected JMSContext (Connection + Session) can be seen as a transactional context
     // Note how re-using this same JMSContext means working within the same transaction
@@ -70,9 +63,9 @@ public class MessageForwardingMessageListener implements MessageListener {
     @Resource(lookup = "jms/MdbExampleCopiedQueue")
     private Queue copyQueue;
 
-    private final AtomicBoolean flaky = new AtomicBoolean(false);
-
     @Override
+    // TransactionAttribute annotation value and even annotation itself can be left implicit, since this is the default
+    @TransactionAttribute(TransactionAttributeType.REQUIRED)
     public void onMessage(Message message) {
         // See https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#example-using-the-simplified-api-and-injection-4
         // for a similar example, where sending the message occurs in the same transaction running method onMessage.
@@ -91,33 +84,16 @@ public class MessageForwardingMessageListener implements MessageListener {
 
                 // Sending the message in the same JMS Session and transaction (so may be rolled back)
                 jmsContext.createProducer().send(copyQueue, messageText);
-
-                processFlakiness(messageText);
             } else {
                 logger.warning("Unsupported message type: " + message.getClass().getName());
             }
         } catch (JMSException e) {
             logger.warning("JMSException caught: " + e);
             messageDrivenContext.setRollbackOnly();
+            // Maybe we should not throw any exception
             throw new EJBException(e);
         }
 
         logger.info("Leaving MessageForwardingMessageListener.onMessage (without throwing any exceptions)");
-    }
-
-    private void processFlakiness(String messageText) {
-        if (messageText.equals(START_FLAKY)) {
-            flaky.set(true);
-        } else if (messageText.equals(STOP_FLAKY)) {
-            flaky.set(false);
-        }
-
-        if (flaky.get()) {
-            if (Instant.now().getEpochSecond() % 10L == 0) {
-                // Rollback
-                logger.warning("Rolling back (due to artificial flakiness)");
-                throw new DummyApplicationException();
-            }
-        }
     }
 }

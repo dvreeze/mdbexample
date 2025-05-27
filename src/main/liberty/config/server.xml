@@ -31,7 +31,11 @@
     </jmsQueue>
 
     <jmsQueue id="MdbExampleCopiedQueue" jndiName="jms/MdbExampleCopiedQueue">
-        <properties.wmqjmsra baseQueueName="${ibmmq-mdb-example-copied-queue-name}"/>
+        <properties.wmqjmsra baseQueueName="${ibmmq-mdb-example-second-queue-name}"/>
+    </jmsQueue>
+
+    <jmsQueue id="MdbExampleThirdQueue" jndiName="jms/MdbExampleThirdQueue">
+        <properties.wmqjmsra baseQueueName="${ibmmq-mdb-example-third-queue-name}"/>
     </jmsQueue>
 
     <connectionManager id="CM" maxPoolSize="400" minPoolSize="1"/>
