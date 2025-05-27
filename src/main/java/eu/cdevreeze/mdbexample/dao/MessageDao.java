@@ -34,8 +34,9 @@ public class MessageDao {
     @PersistenceContext(name = "jpa-unit")
     private EntityManager entityManager;
 
-    public void createMessage(MessageEntity message) {
+    public MessageEntity createMessage(MessageEntity message) {
         entityManager.persist(message);
+        return message;
     }
 
     public MessageEntity findMessage(long id) {

@@ -25,6 +25,8 @@
         <liberty.var.ibmmq-mdb-example-queue-name>DEV.QUEUE.1</liberty.var.ibmmq-mdb-example-queue-name>
         <liberty.var.ibmmq-mdb-example-second-queue-name>DEV.QUEUE.2</liberty.var.ibmmq-mdb-example-second-queue-name>
         <liberty.var.ibmmq-mdb-example-third-queue-name>DEV.QUEUE.3</liberty.var.ibmmq-mdb-example-third-queue-name>
+        <liberty.var.ibmmq-mdb-example-dummy-queue-name>DEV.QUEUE.DUMMY.1</liberty.var.ibmmq-mdb-example-dummy-queue-name>
+        <liberty.var.ibmmq-mdb-example-second-dummy-queue-name>DEV.QUEUE.DUMMY.2</liberty.var.ibmmq-mdb-example-second-dummy-queue-name>
     </properties>
 
     <dependencies>

@@ -33,7 +33,7 @@ public class MessageEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Id
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     // See https://www.baeldung.com/java-postgresql-store-date-time
 
@@ -46,17 +46,17 @@ public class MessageEntity {
     public MessageEntity() {
     }
 
-    public MessageEntity(long id, LocalDateTime timestamp, String messageText) {
+    public MessageEntity(Long id, LocalDateTime timestamp, String messageText) {
         this.id = id;
         this.timestamp = timestamp;
         this.messageText = messageText;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -80,7 +80,7 @@ public class MessageEntity {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof MessageEntity message)) return false;
-        return id == message.id && Objects.equals(timestamp, message.timestamp) && Objects.equals(messageText, message.messageText);
+        return Objects.equals(id, message.id) && Objects.equals(timestamp, message.timestamp) && Objects.equals(messageText, message.messageText);
     }
 
     @Override

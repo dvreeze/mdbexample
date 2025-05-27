@@ -19,6 +19,7 @@ package eu.cdevreeze.mdbexample.service;
 import eu.cdevreeze.mdbexample.dao.MessageDao;
 import eu.cdevreeze.mdbexample.entity.MessageEntity;
 import eu.cdevreeze.mdbexample.model.Message;
+import eu.cdevreeze.mdbexample.model.MessageData;
 import jakarta.enterprise.context.Dependent;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -43,8 +44,8 @@ public class MessageService {
     }
 
     @Transactional
-    public void createMessage(Message message) {
-        messageDao.createMessage(convertToEntity(message));
+    public Message createMessage(MessageData messageData) {
+        return convertToRecord(messageDao.createMessage(convertToEntity(messageData)));
     }
 
     @Transactional
@@ -57,10 +58,10 @@ public class MessageService {
         return messageDao.findAllMessages().stream().map(MessageService::convertToRecord).toList();
     }
 
-    private static MessageEntity convertToEntity(Message msg) {
+    private static MessageEntity convertToEntity(MessageData msg) {
         // See https://mkyong.com/java8/java-convert-instant-to-localdatetime/
         return new MessageEntity(
-                msg.id(),
+                null,
                 LocalDateTime.ofInstant(msg.timestamp(), ZoneOffset.UTC),
                 msg.messageText()
         );

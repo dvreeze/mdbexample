@@ -16,11 +16,14 @@
 
 package eu.cdevreeze.mdbexample.mdb;
 
+import eu.cdevreeze.mdbexample.model.MessageData;
+import eu.cdevreeze.mdbexample.service.MessageService;
 import jakarta.annotation.Resource;
 import jakarta.ejb.*;
 import jakarta.inject.Inject;
 import jakarta.jms.*;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.logging.Logger;
 
@@ -29,7 +32,8 @@ import java.util.logging.Logger;
  * transaction as the call to method "onMessage". On rollback, no forwarding takes place, and
  * the read message is put back on the queue (or its back-out queue), in order to be retried
  * (which may or may not be desirable, or even lead to infinite redelivery, depending on configuration
- * and message settings).
+ * and message settings). This message-driven bean also stores the message in a database. This database
+ * action is part of the same (distributed) JTA transaction.
  * <p>
  * Note that at least 3 Jakarta EE specs play a role here: the CDI spec, the Jakarta Messaging spec
  * (JMS) and the EJB spec (in particular for message-driven beans).
@@ -39,16 +43,16 @@ import java.util.logging.Logger;
 @MessageDriven(
         activationConfig = {
                 @ActivationConfigProperty(
-                        propertyName = "destinationLookup", propertyValue = "jms/MdbExampleDummyQueue"),
+                        propertyName = "destinationLookup", propertyValue = "jms/MdbExampleQueue"),
                 @ActivationConfigProperty(
                         propertyName = "destinationType", propertyValue = "jakarta.jms.Queue")
         }
 )
 // TransactionManagement annotation value and even annotation itself can be left implicit, since this is the default
 @TransactionManagement(TransactionManagementType.CONTAINER)
-public class MessageForwardingMessageListener implements MessageListener {
+public class MessageStoringAndForwardingMessageListener implements MessageListener {
 
-    private static final Logger logger = Logger.getLogger(MessageForwardingMessageListener.class.getName());
+    private static final Logger logger = Logger.getLogger(MessageStoringAndForwardingMessageListener.class.getName());
 
     // This injected JMSContext (Connection + Session) can be seen as a transactional context
     // Note how re-using this same JMSContext means working within the same transaction
@@ -60,8 +64,11 @@ public class MessageForwardingMessageListener implements MessageListener {
     @Resource
     private MessageDrivenContext messageDrivenContext;
 
-    @Resource(lookup = "jms/MdbExampleCopiedDummyQueue")
+    @Resource(lookup = "jms/MdbExampleCopiedQueue")
     private Queue copyQueue;
+
+    @Inject
+    private MessageService messageService;
 
     @Override
     // TransactionAttribute annotation value and even annotation itself can be left implicit, since this is the default
@@ -70,17 +77,23 @@ public class MessageForwardingMessageListener implements MessageListener {
         // See https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#example-using-the-simplified-api-and-injection-4
         // for a similar example, where sending the message occurs in the same transaction running method onMessage.
 
-        logger.info("Entering MessageForwardingMessageListener.onMessage");
+        logger.info("Entering MessageStoringAndForwardingMessageListener.onMessage");
 
         Objects.requireNonNull(jmsContext, "JMSContext must be non-null");
         Objects.requireNonNull(messageDrivenContext, "MessageDrivenContext must be non-null");
         Objects.requireNonNull(copyQueue, "Queue 'jms/MdbExampleCopiedQueue' must be non-null");
+        Objects.requireNonNull(messageService, "MessageService must be non-null");
 
         try {
             if (message instanceof TextMessage textMessage) {
                 String messageText = textMessage.getText();
 
                 logger.info("Message payload: " + messageText);
+
+                // Improve by getting the timestamp from the JMS message
+                var msg = messageService.createMessage(new MessageData(Instant.now(), messageText));
+
+                logger.info("Saved message payload: " + msg.messageText());
 
                 // Sending the message in the same JMS Session and transaction (so may be rolled back)
                 jmsContext.createProducer().send(copyQueue, messageText);
@@ -94,6 +107,6 @@ public class MessageForwardingMessageListener implements MessageListener {
             throw new EJBException(e);
         }
 
-        logger.info("Leaving MessageForwardingMessageListener.onMessage (without throwing any exceptions)");
+        logger.info("Leaving MessageStoringAndForwardingMessageListener.onMessage (without throwing any exceptions)");
     }
 }

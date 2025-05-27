@@ -39,6 +39,14 @@
         <properties.wmqjmsra baseQueueName="${ibmmq-mdb-example-third-queue-name}"/>
     </jmsQueue>
 
+    <jmsQueue id="MdbExampleDummyQueue" jndiName="jms/MdbExampleDummyQueue">
+        <properties.wmqjmsra baseQueueName="${ibmmq-mdb-example-dummy-queue-name}"/>
+    </jmsQueue>
+
+    <jmsQueue id="MdbExampleCopiedDummyQueue" jndiName="jms/MdbExampleCopiedDummyQueue">
+        <properties.wmqjmsra baseQueueName="${ibmmq-mdb-example-second-dummy-queue-name}"/>
+    </jmsQueue>
+
     <connectionManager id="CM" maxPoolSize="400" minPoolSize="1"/>
 
     <jmsConnectionFactory
