@@ -87,7 +87,7 @@
 
     <!-- Datasource Configuration -->
     <!-- See https://openliberty.io/docs/latest/relational-database-connections-JDBC.html -->
-    <dataSource id="messageJpaDatasource" jndiName="jdbc/messageJpaDatasource"
+    <dataSource id="messageJpaDataSource" jndiName="jdbc/messageJpaDataSource"
                 jdbcDriverRef="postgresqlDriver"
                 type="javax.sql.ConnectionPoolDataSource"
                 transactional="true">
