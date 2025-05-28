@@ -41,6 +41,8 @@ Also see the [IBM MQ Developer Essentials](https://developer.ibm.com/learningpat
 for example for more information on the [MQ Console](https://developer.ibm.com/learningpaths/ibm-mq-badge/setup-use-ibm-mq-console/)
 which is also needed to interact with the message-driven beans in the web application.
 
+Using the MQ Console, create extra queues DEV.QUEUE.DUMMY.1 and DEV.QUEUE.DUMMY.2.
+
 We also need a PostgreSQL database:
 
 ```shell
