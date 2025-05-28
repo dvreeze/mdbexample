@@ -40,12 +40,7 @@ import java.util.List;
 public class MessageService {
 
     @Inject
-    private final MessageDao messageDao;
-
-    @Inject
-    public MessageService(MessageDao messageDao) {
-        this.messageDao = messageDao;
-    }
+    private MessageDao messageDao;
 
     public Message createMessage(MessageData messageData) {
         return convertToRecord(messageDao.createMessage(convertToEntity(messageData)));
