@@ -31,11 +31,16 @@ import java.util.List;
 @RequestScoped
 public class MessageDao {
 
+    // According to the persistence.xml content, the EntityManager is a JTA EntityManager.
+    // That is, it participates in the current JTA transaction.
+    // See https://jakarta.ee/specifications/persistence/3.2/jakarta-persistence-spec-3.2#controlling-transactions.
+
     @PersistenceContext(name = "jpa-unit")
     private EntityManager entityManager;
 
     public MessageEntity createMessage(MessageEntity message) {
         entityManager.persist(message);
+        entityManager.flush();
         return message;
     }
 

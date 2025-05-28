@@ -73,6 +73,17 @@
                 transportType="CLIENT"/>
     </jmsActivationSpec>
 
+    <jmsActivationSpec id="mdbexample/MessageStoringAndForwardingMessageListener">
+        <properties.wmqjmsra
+                hostName="${ibmmq-hostname}"
+                port="${ibmmq-port}"
+                channel="${ibmmq-channel}"
+                queueManager="${ibmmq-queue-manager}"
+                userName="${ibmmq-username}"
+                password="${ibmmq-password}"
+                transportType="CLIENT"/>
+    </jmsActivationSpec>
+
     <resourceAdapter id="wmqjmsra"
                      location="https://repo.maven.apache.org/maven2/com/ibm/mq/wmq.jakarta.jmsra/9.4.0.0/wmq.jakarta.jmsra-9.4.0.0.rar"/>
 
