@@ -20,9 +20,10 @@ import eu.cdevreeze.mdbexample.dao.MessageDao;
 import eu.cdevreeze.mdbexample.entity.MessageEntity;
 import eu.cdevreeze.mdbexample.model.Message;
 import eu.cdevreeze.mdbexample.model.MessageData;
-import jakarta.enterprise.context.Dependent;
+import jakarta.ejb.Stateless;
+import jakarta.ejb.TransactionManagement;
+import jakarta.ejb.TransactionManagementType;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -33,9 +34,12 @@ import java.util.List;
  *
  * @author Chris de Vreeze
  */
-@Dependent
+@Stateless
+// TransactionManagement annotation value and even annotation itself can be left implicit, since this is the default
+@TransactionManagement(TransactionManagementType.CONTAINER)
 public class MessageService {
 
+    @Inject
     private final MessageDao messageDao;
 
     @Inject
@@ -43,17 +47,14 @@ public class MessageService {
         this.messageDao = messageDao;
     }
 
-    @Transactional
     public Message createMessage(MessageData messageData) {
         return convertToRecord(messageDao.createMessage(convertToEntity(messageData)));
     }
 
-    @Transactional
     public Message findMessage(long id) {
         return convertToRecord(messageDao.findMessage(id));
     }
 
-    @Transactional
     public List<Message> findAllMessages() {
         return messageDao.findAllMessages().stream().map(MessageService::convertToRecord).toList();
     }
