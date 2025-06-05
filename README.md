@@ -10,6 +10,11 @@ Other message-driven beans in the project are more simple than the one mentioned
 
 The use of JMS is restricted to point-to-point messaging, rather than pub-sub.
 
+The idea is to get a good understanding of transactions in message-driven beans, by diving into both *theory*
+and *practice*. To a large extent, the theory is found in *Jakarta EE specifications*. The practice part
+is this repository, where the code runs against Docker containers for Open Liberty and MQ, to make the
+example more realistic and the conclusions more reliable.
+
 ## Creating this project
 
 To bootstrap the project, the [Open Liberty JMS Guide](https://openliberty.io/guides/jms-intro.html) was used. Also, the
@@ -167,3 +172,5 @@ Two things that make transactions in Jakarta EE message-driven beans (and in JMS
   * Exception handling is closely related to transactions, and should be programmed with care
 * The Jakarta EE specs do not support *local reasoning* about code (given the restrictions in API use in different scenarios)
   * There are many restrictions on the use of the JMS and JTA APIs depending on the kind of transaction management
+  * Also, annotations and deployment descriptors can both be used for the same "configuration"
+  * In general, reasoning about *annotations* can be quite hard when there is a lot of machinery processing those annotations
