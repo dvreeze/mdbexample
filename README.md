@@ -165,6 +165,13 @@ MDB leads to the MDB instance being discarded. This may be less desirable if it 
 receiving the message. In that case we could treat the (briefly) failing database connection like
 an application exception that should cause a rollback, but without discarding the MDB instance.
 
+If an MDB (in Open Liberty) running in a Kubernetes cloud environment throws a system exception, and a
+[liveness health check](https://download.eclipse.org/microprofile/microprofile-health-4.0/microprofile-health-spec-4.0.html)
+causes the pod running the application to restart, then this restart time will be quite large for
+Open Liberty. Clearly this is a disadvantage of Open Liberty in a Kubernetes environment, as compared
+to Quarkus or even typical Spring Boot applications. Yet this readme is mainly about MDB transaction
+management in Open Liberty against MQ.
+
 For more information on EJB exception handling, see for example:
 * [EJB exception handling](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2940)
 * in particular, [MDB exception handling](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#exceptions-from-message-driven-bean-message-listener-methods)
