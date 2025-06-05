@@ -144,7 +144,22 @@ and we should be familiar with both styles of coding (non-local) transaction man
 
 Also note that *exception handling* for message-driven beans is closely related to transaction management.
 In general, MDB message handling code should not throw any (unchecked) exceptions other than so-called
-*application exceptions* (specifying whether the exception should lead to a transaction rollback).
+*application exceptions* (specifying whether the exception should lead to a transaction rollback),
+unless the message-driven bean instance should be discarded.
+
+A validation error on an incoming message should typically be an *application exception*. Typically, there is
+little point in retrying receiving the same message if the message itself is to blame, so a rollback
+(triggering retries) might be less useful than simply letting the message handling method be a no-op other
+than the input validation.
+
+A failing database connection should typically be a *system exception*. Throwing a system exception from the
+MDB leads to the MDB instance being discarded. This may be less desirable if it does make sense to retry
+receiving the message. In that case we could treat the (briefly) failing database connection like
+an application exception that should cause a rollback, but without discarding the MDB instance.
+
+For more information on EJB exception handling, see for example:
+* [EJB exception handling](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2940)
+* in particular, [MDB exception handling](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#exceptions-from-message-driven-bean-message-listener-methods)
 
 Important specifications concerning JMS and message-driven beans are:
 * [JMS](https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1)
