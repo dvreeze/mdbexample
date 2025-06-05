@@ -84,6 +84,8 @@ public class MessageStoringAndForwardingMessageListener implements MessageListen
         Objects.requireNonNull(copyQueue, "Queue 'jms/MdbExampleCopiedQueue' must be non-null");
         Objects.requireNonNull(messageService, "MessageService must be non-null");
 
+        logger.info("JMSContext: " + jmsContext);
+
         try {
             if (message instanceof TextMessage textMessage) {
                 String messageText = textMessage.getText();
@@ -103,8 +105,7 @@ public class MessageStoringAndForwardingMessageListener implements MessageListen
         } catch (JMSException e) {
             logger.warning("JMSException caught: " + e);
             messageDrivenContext.setRollbackOnly();
-            // Maybe we should not throw any exception
-            throw new EJBException(e);
+            // No (unchecked) exception thrown
         }
 
         logger.info("Leaving MessageStoringAndForwardingMessageListener.onMessage (without throwing any exceptions)");

@@ -83,6 +83,10 @@ CREATE TABLE message (
 );
 ALTER TABLE public.message OWNER TO postgres;
 
+# Constraint that is violated for blank messages (i.e. messages containing only whitespace as payload)
+ALTER TABLE public.message ADD CONSTRAINT non_blank_message
+    CHECK (nullif(trim(message_text), '') IS NOT NULL);
+
 # Leaving psql and the container
 exit
 ```
@@ -94,18 +98,24 @@ first consider *(local) database transactions*. An excellent explanation can be 
 [Spring Transaction Management](https://www.marcobehler.com/guides/spring-transaction-management-transactional-in-depth).
 It may discuss local database transactions in a [Spring](https://spring.io) context, but in essence
 this article is not about Spring. In a [Jakarta EE](https://jakarta.ee) context, the content of the
-article would be quite similar.
+article would be quite similar (provided local JDBC transactions are used instead of distributed transactions).
 
 Then it would make sense to consider *(local) JMS transactions*. See for example
 [local JMS transactions](https://developer.ibm.com/articles/an-introduction-to-local-transactions-using-mq-and-jms/).
 It is important to understand the *scope* of transactions in a JMS context, and how a *rollback* of
 a "message handler transaction" can lead to *redelivery* (and even infinite redelivery depending on MQ configuration
-and/or message headers).
+and/or message headers). That is, only for *container-managed transactions* message receipt is part of the
+transaction. For *bean-managed transactions* this is not the case! See
+[MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods).
 
 Next it is needed to get some familiarity with *distributed transactions*, spanning multiple transactional
 resources, such as a messaging server and a database. Some background on that can be found when
 studying *JTA* (see for example several Jakarta EE specifications, and/or study Spring's *PlatformTransactionManager*
-API and its implementations).
+API and its implementations). In a Jakarta EE context, it is very important to be aware of which APIs can
+and cannot be used for:
+* local transactions
+* container-managed distributed transactions
+* bean-managed distributed transactions
 
 We normally expect transactions to be atomic (the "A" in ACID), but this gets more complicated if non-transactional
 resources (such as a remote file share) are part of the atomic "transaction". See
@@ -116,3 +126,25 @@ to get an idea of complexities involved. Still, this is also something to think 
 Note how the JMS specification and in particular the EJB specification are quite prescriptive about how to
 use and not to use the JMS API w.r.t. transaction management. Transactions can be *container-managed* or *bean-managed*,
 and we should be familiar with both styles of coding transaction management in a JMS context.
+
+Also note that *exception handling* for message-driven beans is closely related to transaction management.
+In general, MDB message handling code should not throw any (unchecked) exceptions other than so-called
+*application exceptions* (specifying whether the exception should lead to a transaction rollback).
+
+Important specifications concerning JMS and message-driven beans are:
+* [JMS](https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1)
+* [EJB](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0)
+As a foundational specification, the [CDI](https://jakarta.ee/specifications/cdi/4.1/jakarta-cdi-spec-4.1)
+specification is quite important as well.
+
+Some specific interesting parts of the JMS specification are:
+* [JMS transactions](https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#transactions)
+* [JMS distributed transactions](https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#distributed-transactions)
+* [JMS in Jakarta EE](https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#use-of-jakarta-messaging-api-in-jakarta-ee-applications)
+* [JMS examples](https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#examples-of-the-simplified-api)
+
+Some specific interesting parts of the EJB specification (for MDBs) are:
+* [MDB](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a1702)
+* in particular, [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods)
+* [MDB transactions](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods)
+* in particular, [sample transaction scenarios](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#sample-scenarios)
