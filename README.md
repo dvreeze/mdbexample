@@ -106,7 +106,7 @@ It is important to understand the *scope* of transactions in a JMS context, and 
 a "message handler transaction" can lead to *redelivery* (and even infinite redelivery depending on MQ configuration
 and/or message headers).
 
-In an EJB context, for *message-driven beans*, only for *container-managed transactions* message receipt is part of the
+In an EJB context (see below), for *message-driven beans*, only for *container-managed transactions* message receipt is part of the
 transaction. For *bean-managed transactions* this is not the case! See
 [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods).
 
@@ -136,6 +136,7 @@ In general, MDB message handling code should not throw any (unchecked) exception
 Important specifications concerning JMS and message-driven beans are:
 * [JMS](https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1)
 * [EJB](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0)
+
 As a foundational specification, the [CDI](https://jakarta.ee/specifications/cdi/4.1/jakarta-cdi-spec-4.1)
 specification is quite important as well.
 
