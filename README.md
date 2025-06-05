@@ -100,12 +100,16 @@ exit
 
 ## Background on transactions
 
+### Local database transactions
+
 *Transactions* are a complex topic. To get some background on *ACID transactions*, it makes sense to
 first consider *(local) database transactions*. An excellent explanation can be found in the article
 [Spring Transaction Management](https://www.marcobehler.com/guides/spring-transaction-management-transactional-in-depth).
 It may discuss local database transactions in a [Spring](https://spring.io) context, but in essence
 this article is not about Spring. The gist of the article applies to resource-local database transactions
 in any Java program (using annotation-based transaction management).
+
+### Local JMS transactions
 
 Then it would make sense to consider *(local) JMS transactions*. See for example
 [local JMS transactions](https://developer.ibm.com/articles/an-introduction-to-local-transactions-using-mq-and-jms/).
@@ -116,6 +120,8 @@ and/or message headers).
 In an EJB context (see below), for *message-driven beans*, only for *container-managed transactions* message receipt is part of the
 transaction. For *bean-managed transactions* this is not the case! See
 [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods).
+
+### JTA transactions and distributed transactions
 
 Next it is needed to get some familiarity with *distributed transactions*, spanning multiple transactional
 resources, such as a messaging server and a database. Some background on that can be found when
@@ -132,15 +138,15 @@ transactions in an EJB context. In other words, the term is used for transaction
 transactions whose boundaries can be set by using APIs such as JDBC, JPA and JMS. Recall that only "JTA transactions"
 can be distributed.
 
+### Non-transactional resources in transactions
+
 We normally expect transactions to be atomic (the "A" in ACID), but this gets more complicated if non-transactional
 resources (such as a remote file share) are part of the atomic "transaction". See
 [Binding non-transactional resources into JTA transactions](https://www.maxant.ch/2015/08/11/1439322480000/)
 to get an idea of complexities involved. Still, this is also something to think about when creating
 (transactional) message-driven beans.
 
-Note how the JMS specification and in particular the EJB specification are quite prescriptive about how to
-use and not to use the JMS API w.r.t. transaction management. JTA transactions can be *container-managed* or *bean-managed*,
-and we should be familiar with both styles of coding (non-local) transaction management in a JMS context.
+### Transactions and exception handling in MDBs
 
 Also note that *exception handling* for message-driven beans is closely related to transaction management.
 In general, MDB message handling code should not throw any (unchecked) exceptions other than so-called
@@ -161,6 +167,8 @@ For more information on EJB exception handling, see for example:
 * [EJB exception handling](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2940)
 * in particular, [MDB exception handling](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#exceptions-from-message-driven-bean-message-listener-methods)
 
+### More information on (Jakarta EE) transactions
+
 Important specifications concerning JMS and message-driven beans are:
 * [JMS](https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1)
 * [EJB](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0)
@@ -179,6 +187,8 @@ Some specific interesting parts of the EJB specification (for MDBs) are:
 * in particular, [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods)
 * [EJB transactions](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2172)
 * in particular, [sample transaction scenarios](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#sample-scenarios)
+
+### Final remarks on transactions
 
 Two things that make transactions in Jakarta EE message-driven beans (and in JMS in general) more complex are:
 * To reason about *program state*, we need to include the implicit (JTA or resource-local) transactional state, if any
