@@ -150,7 +150,7 @@ unless the message-driven bean instance should be discarded.
 A validation error on an incoming message should typically be an *application exception*. Typically, there is
 little point in retrying receiving the same message if the message itself is to blame, so a rollback
 (triggering retries) might be less useful than simply letting the message handling method be a no-op other
-than the input validation.
+than the input validation in that code path.
 
 A failing database connection should typically be a *system exception*. Throwing a system exception from the
 MDB leads to the MDB instance being discarded. This may be less desirable if it does make sense to retry
