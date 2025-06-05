@@ -109,6 +109,10 @@ It may discuss local database transactions in a [Spring](https://spring.io) cont
 this article is not about Spring. The gist of the article applies to resource-local database transactions
 in any Java program (using annotation-based or programmatic transaction management).
 
+The above-mentioned article about Spring Transaction Management also discusses the important topics of:
+* *transaction propagation*
+* transaction *isolation level*
+
 ### Local JMS transactions
 
 Then it would make sense to consider *(local) JMS transactions*. See for example
