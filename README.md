@@ -105,7 +105,7 @@ first consider *(local) database transactions*. An excellent explanation can be 
 [Spring Transaction Management](https://www.marcobehler.com/guides/spring-transaction-management-transactional-in-depth).
 It may discuss local database transactions in a [Spring](https://spring.io) context, but in essence
 this article is not about Spring. The gist of the article applies to resource-local database transactions
-in any Java program.
+in any Java program (using annotation-based transaction management).
 
 Then it would make sense to consider *(local) JMS transactions*. See for example
 [local JMS transactions](https://developer.ibm.com/articles/an-introduction-to-local-transactions-using-mq-and-jms/).
