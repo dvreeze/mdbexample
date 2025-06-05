@@ -175,3 +175,8 @@ Two things that make transactions in Jakarta EE message-driven beans (and in JMS
   * Also, annotations and deployment descriptors can both be used for the same "configuration"
   * In general, reasoning about *annotations* can be quite hard when there is a lot of machinery processing those annotations, or when combining them is easy to get wrong
   * As far as I am concerned, the Jakarta EE annotations can easily exhaust the *complexity budget* (that's why I'd rather avoid additional Lombok annotations)
+
+Also, in practice, details about transaction management vary greatly among different "runtime environments".
+For example, [transactions in Quarkus](https://quarkus.io/guides/transaction) are not distributed. So even
+when using the JTA Transactional annotation, we need to let go of the assumption that the transaction can be
+distributed over 2 or more transactional resources.
