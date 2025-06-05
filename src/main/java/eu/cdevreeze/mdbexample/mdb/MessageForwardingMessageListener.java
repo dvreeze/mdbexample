@@ -51,7 +51,7 @@ public class MessageForwardingMessageListener implements MessageListener {
     private static final Logger logger = Logger.getLogger(MessageForwardingMessageListener.class.getName());
 
     // This injected JMSContext (Connection + Session) should not be seen as a transactional context.
-    // That would be the case for local transactions, but here we use JTA transactions,
+    // That would potentially be the case for local transactions, but here we use JTA transactions,
     // which do not require the use of a single JMSContext or Connection.
     // Still, there is little point in using more than one JMSContext within that JTA transaction.
     // Recall that the JMS API cannot be used for committing or rolling back a JTA transaction, and

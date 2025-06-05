@@ -117,9 +117,9 @@ resources, such as a messaging server and a database. Some background on that ca
 studying *JTA* (see for example several Jakarta EE specifications, and/or study Spring's *PlatformTransactionManager*
 API and its implementations). In a Jakarta EE context, it is very important to be aware of which APIs can
 and cannot be used for:
-* local transactions
-* container-managed distributed transactions
-* bean-managed distributed transactions
+* resource-local transactions
+* container-managed JTA transactions (distributed if multiple transactional resources take part in the transaction)
+* bean-managed JTA transactions (distributed if multiple transactional resources take part in the transaction)
 
 We normally expect transactions to be atomic (the "A" in ACID), but this gets more complicated if non-transactional
 resources (such as a remote file share) are part of the atomic "transaction". See
@@ -156,4 +156,8 @@ Some specific interesting parts of the EJB specification (for MDBs) are:
 
 Two things that make transactions in Jakarta EE message-driven beans (and in JMS in general) more complex are:
 * To reason about *program state*, we need to include the implicit (JTA or resource-local) transactional state, if any
+  * This implicit program state is quite different for resource-local versus JTA transactions
+  * There are ample opportunities to get things wrong when using EJBs and JMS
+  * Exception handling is closely related to transactions, and should be programmed with care
 * The Jakarta EE specs do not support *local reasoning* about code (given the restrictions in API use in different scenarios)
+  * There are many restrictions on the use of the JMS and JTA APIs depending on the kind of transaction management
