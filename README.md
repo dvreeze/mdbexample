@@ -107,7 +107,7 @@ first consider *(local) database transactions*. An excellent explanation can be 
 [Spring Transaction Management](https://www.marcobehler.com/guides/spring-transaction-management-transactional-in-depth).
 It may discuss local database transactions in a [Spring](https://spring.io) context, but in essence
 this article is not about Spring. The gist of the article applies to resource-local database transactions
-in any Java program (using annotation-based transaction management).
+in any Java program (using annotation-based or programmatic transaction management).
 
 ### Local JMS transactions
 
@@ -117,8 +117,10 @@ It is important to understand the *scope* of transactions in a JMS context, and 
 a "message handler transaction" can lead to *redelivery* (and even infinite redelivery depending on MQ configuration
 and/or message headers).
 
-In an EJB context (see below), for *message-driven beans*, only for *container-managed transactions* message receipt is part of the
-transaction. For *bean-managed transactions* this is not the case! See
+In an EJB context (see below), we typically do not use resource-local transactions, but it is still
+important to be aware of whether the transaction scope does include message receipt.
+In *message-driven beans*, when using *container-managed transactions*, message receipt is part of the
+transaction. Yet for *bean-managed transactions* this is not the case! See
 [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods).
 
 ### JTA transactions and distributed transactions
