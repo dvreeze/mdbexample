@@ -139,8 +139,8 @@ to get an idea of complexities involved. Still, this is also something to think 
 (transactional) message-driven beans.
 
 Note how the JMS specification and in particular the EJB specification are quite prescriptive about how to
-use and not to use the JMS API w.r.t. transaction management. Transactions can be *container-managed* or *bean-managed*,
-and we should be familiar with both styles of coding transaction management in a JMS context.
+use and not to use the JMS API w.r.t. transaction management. JTA transactions can be *container-managed* or *bean-managed*,
+and we should be familiar with both styles of coding (non-local) transaction management in a JMS context.
 
 Also note that *exception handling* for message-driven beans is closely related to transaction management.
 In general, MDB message handling code should not throw any (unchecked) exceptions other than so-called
