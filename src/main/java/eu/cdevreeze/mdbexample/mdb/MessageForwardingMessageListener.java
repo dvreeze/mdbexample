@@ -88,7 +88,6 @@ public class MessageForwardingMessageListener implements MessageListener {
 
                 logger.info("Message payload: " + messageText);
 
-                // Sending the message in the same JMS Session and transaction (so may be rolled back)
                 jmsContext.createProducer().send(copyQueue, messageText);
             } else {
                 logger.warning("Unsupported message type: " + message.getClass().getName());

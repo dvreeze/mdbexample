@@ -101,7 +101,6 @@ public class MessageStoringAndForwardingMessageListener implements MessageListen
 
                 logger.info("Saved message payload: " + msg.messageText());
 
-                // Sending the message in the same JMS Session and transaction (so may be rolled back)
                 jmsContext.createProducer().send(copyQueue, messageText);
             } else {
                 logger.warning("Unsupported message type: " + message.getClass().getName());
