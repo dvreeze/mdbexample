@@ -54,12 +54,9 @@ public class MessageStoringAndForwardingMessageListener implements MessageListen
 
     private static final Logger logger = Logger.getLogger(MessageStoringAndForwardingMessageListener.class.getName());
 
-    // This injected JMSContext (Connection + Session) should not be seen as a transactional context.
-    // That would potentially be the case for local transactions, but here we use JTA transactions,
-    // which do not require the use of a single JMSContext or Connection.
-    // Still, there is little point in using more than one JMSContext within that JTA transaction.
-    // Recall that the JMS API cannot be used for committing or rolling back a JTA transaction, and
-    // that not even the JTA UserTransaction API can be used for container-managed JTA transactions.
+    // This injected JMSContext (Connection + Session) should not be seen as a complete (JTA) transactional context,
+    // but (in CDI terms) the JMSContext is TransactionScoped
+    // (see https://jakarta.ee/specifications/messaging/3.1/jakarta-messaging-spec-3.1#use-of-jakarta-messaging-api-in-jakarta-ee-applications).
 
     @Inject
     @JMSConnectionFactory("jms/connectionFactory")
