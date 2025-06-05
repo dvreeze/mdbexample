@@ -104,7 +104,9 @@ Then it would make sense to consider *(local) JMS transactions*. See for example
 [local JMS transactions](https://developer.ibm.com/articles/an-introduction-to-local-transactions-using-mq-and-jms/).
 It is important to understand the *scope* of transactions in a JMS context, and how a *rollback* of
 a "message handler transaction" can lead to *redelivery* (and even infinite redelivery depending on MQ configuration
-and/or message headers). That is, only for *container-managed transactions* message receipt is part of the
+and/or message headers).
+
+In an EJB context, for *message-driven beans*, only for *container-managed transactions* message receipt is part of the
 transaction. For *bean-managed transactions* this is not the case! See
 [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods).
 
