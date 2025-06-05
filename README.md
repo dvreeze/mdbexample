@@ -8,6 +8,8 @@ This project shows an example of a message-driven bean:
 
 Other message-driven beans in the project are more simple than the one mentioned above.
 
+The use of JMS is restricted to point-to-point messaging, rather than pub-sub.
+
 ## Creating this project
 
 To bootstrap the project, the [Open Liberty JMS Guide](https://openliberty.io/guides/jms-intro.html) was used. Also, the
@@ -97,8 +99,8 @@ exit
 first consider *(local) database transactions*. An excellent explanation can be found in the article
 [Spring Transaction Management](https://www.marcobehler.com/guides/spring-transaction-management-transactional-in-depth).
 It may discuss local database transactions in a [Spring](https://spring.io) context, but in essence
-this article is not about Spring. In a [Jakarta EE](https://jakarta.ee) context, the content of the
-article would be quite similar (provided local JDBC transactions are used instead of distributed transactions).
+this article is not about Spring. The gist of the article applies to resource-local database transactions
+in any Java program.
 
 Then it would make sense to consider *(local) JMS transactions*. See for example
 [local JMS transactions](https://developer.ibm.com/articles/an-introduction-to-local-transactions-using-mq-and-jms/).
@@ -151,3 +153,7 @@ Some specific interesting parts of the EJB specification (for MDBs) are:
 * in particular, [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods)
 * [EJB transactions](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2172)
 * in particular, [sample transaction scenarios](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#sample-scenarios)
+
+Two things that make transactions in Jakarta EE message-driven beans (and in JMS in general) more complex are:
+* To reason about *program state*, we need to include the implicit (JTA or resource-local) transactional state, if any
+* The Jakarta EE specs do not support *local reasoning* about code (given the restrictions in API use in different scenarios)

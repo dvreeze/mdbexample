@@ -29,10 +29,10 @@ import java.util.logging.Logger;
 
 /**
  * Simple message forwarding message-driven bean. Forwarding the message happens in the same
- * transaction as the call to method "onMessage". On rollback, no forwarding takes place, and
- * the read message is put back on the queue (or its back-out queue), in order to be retried
+ * transaction as the entire call to method "onMessage". On rollback, no forwarding takes place, and
+ * the read message remains on the queue, in order to be retried a number of times
  * (which may or may not be desirable, or even lead to infinite redelivery, depending on configuration
- * and message settings). This message-driven bean also stores the message in a database. This database
+ * and/or message settings). This message-driven bean also stores the message in a database. This database
  * action is part of the same (distributed) JTA transaction.
  * <p>
  * Note that at least 3 Jakarta EE specs play a role here: the CDI spec, the Jakarta Messaging spec
@@ -54,8 +54,12 @@ public class MessageStoringAndForwardingMessageListener implements MessageListen
 
     private static final Logger logger = Logger.getLogger(MessageStoringAndForwardingMessageListener.class.getName());
 
-    // This injected JMSContext (Connection + Session) can be seen as a transactional context
-    // Note how re-using this same JMSContext means working within the same transaction
+    // This injected JMSContext (Connection + Session) should not be seen as a transactional context.
+    // That would be the case for local transactions, but here we use JTA transactions,
+    // which do not require the use of a single JMSContext or Connection.
+    // Still, there is little point in using more than one JMSContext within that JTA transaction.
+    // Recall that the JMS API cannot be used for committing or rolling back a JTA transaction, and
+    // that not even the JTA UserTransaction API can be used for container-managed JTA transactions.
 
     @Inject
     @JMSConnectionFactory("jms/connectionFactory")
