@@ -121,6 +121,12 @@ and cannot be used for:
 * container-managed JTA transactions (distributed if multiple transactional resources take part in the transaction)
 * bean-managed JTA transactions (distributed if multiple transactional resources take part in the transaction)
 
+The term "JTA transaction" is used rather loosely above. It does not necessarily mean that JTA as Jakarta EE API is
+used ("jakarta.ejb" annotations qualify as well), but the term is used for container-managed and bean-managed
+transactions in an EJB context. In other words, the term is used for transactions that are not resource-local
+transactions whose boundaries can be set by using APIs such as JDBC, JPA and JMS. Recall that only "JTA transactions"
+can be distributed.
+
 We normally expect transactions to be atomic (the "A" in ACID), but this gets more complicated if non-transactional
 resources (such as a remote file share) are part of the atomic "transaction". See
 [Binding non-transactional resources into JTA transactions](https://www.maxant.ch/2015/08/11/1439322480000/)
