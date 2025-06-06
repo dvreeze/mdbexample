@@ -110,8 +110,8 @@ this article is not about Spring. The gist of the article applies to resource-lo
 in any Java program (using annotation-based or programmatic transaction management).
 
 The above-mentioned article about Spring Transaction Management also discusses the important topics of:
-* *transaction propagation*
-* transaction *isolation level*
+* *transaction propagation* (which is not an intrinsic transaction property)
+* transaction *isolation level* (which is an intrinsic transaction property)
 
 ### Local JMS transactions
 
