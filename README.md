@@ -217,7 +217,7 @@ code, let us at least make that transactional state *explicit* when reasoning ab
 This is true in general when reasoning about code: *implicit context* should be made *explicit* somehow
 when thinking about what the code does, as if this implicit context is an extra function parameter.
 That's a disadvantage of annotation-based transaction management: the transactional context is implicit,
-as compared to explicit function parameters.
+at least it is more implicit than explicit function parameters.
 
 Consider the example of code that uses *Jakarta Persistence*. There's a lot of potentially *implicit state* when
 reasoning about such code. For example:
