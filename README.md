@@ -270,8 +270,8 @@ To propagate a container-managed transaction to called code, that code should ty
 See for example [sample transaction scenarios](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#sample-scenarios).
 
 Keep the limitations of generated (transactional) *proxy objects* in mind, such as self-calls that are not intercepted by the proxy object.
-Also mind the limitations imposed by proxy method generation on how to write the proxied class
-(extensible, default no-arg constructor etc.).
+Also mind the limitations imposed by "proxy-by-subclassing" on how to write the proxied class
+(must be extensible, must have a default no-arg constructor etc.).
 
 Container-managed MDB listener method transactions can only use propagation `REQUIRED` or `NOT_SUPPORTED`.
 Yet via calls to session EJBs (implicitly passing the same transactional context), a new transaction with
