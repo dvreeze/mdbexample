@@ -235,7 +235,8 @@ reasoning about such code. For example:
 
 This is quite a lot of implicit program state that must be made explicit conceptually when reasoning about
 the code using Jakarta Persistence. We can *limit the scope* of all this implicit context by converting *JPA entity query results*
-into *deeply immutable Java object graphs*, after which we have far less implicit state, if any.
+into *deeply immutable Java record object graphs* (using Guava immutable collections for collection-valued record components),
+after which we have far less implicit state, if any.
 
 Let's now consider *(transactional) message-driven beans*. To reason about the code, mind the following potentially implicit state:
 * a potentially running transaction (either container-managed or bean-managed or resource-local)
