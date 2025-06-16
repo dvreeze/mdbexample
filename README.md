@@ -138,6 +138,9 @@ and cannot be used for:
 * container-managed JTA transactions (distributed if multiple transactional resources take part in the transaction)
 * bean-managed JTA transactions (distributed if multiple transactional resources take part in the transaction)
 
+In any case, never mix resource-local transactions with JTA transactions, and never mix container-managed transactions
+with bean-managed transactions.
+
 The term "JTA transaction" is used rather loosely above. It does not necessarily mean that JTA as Jakarta EE API is
 used ("jakarta.ejb" annotations qualify as well), but the term is used for container-managed and bean-managed
 transactions in an EJB context. In other words, the term is used for transactions that are not resource-local
@@ -201,20 +204,65 @@ Some specific interesting parts of the EJB specification (for MDBs) are:
 * [EJB transactions](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2172)
 * in particular, [sample transaction scenarios](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#sample-scenarios)
 
-### Final remarks on transactions
+### Reasoning about transactional code, in particular in MDBs
 
-Two things that make transactions in Jakarta EE message-driven beans (and in JMS in general) more complex are:
-* To reason about *program state*, we need to include the implicit (JTA or resource-local) transactional state, if any
-  * This implicit program state is quite different for resource-local versus JTA transactions
-  * There are ample opportunities to get things wrong when using EJBs and JMS
-  * Exception handling is closely related to transactions, and should be programmed with care
-* The Jakarta EE specs do not support *local reasoning* about code (given the restrictions in API use in different scenarios)
-  * There are many restrictions on the use of the JMS and JTA APIs depending on the kind of transaction management
-  * Also, annotations and deployment descriptors can both be used for the same "configuration"
-  * In general, reasoning about *annotations* can be quite hard when there is a lot of machinery processing those annotations, or when combining them is easy to get wrong
-  * As far as I am concerned, the Jakarta EE annotations can easily exhaust the *complexity budget* (that's why I'd rather avoid additional Lombok annotations)
+No code is *easier to (locally) reason about* than *deterministic pure (side-effect-free) total functions*, taking *deeply immutable*
+parameters and returning deeply immutable function results.
 
-Also, in practice, details about transaction management vary greatly among different "runtime environments".
-For example, [transactions in Quarkus](https://quarkus.io/guides/transaction) are not distributed. So even
-when using the JTA Transactional annotation, we need to let go of the assumption that the transaction can be
-distributed over 2 or more transactional resources.
+That is not what we have here. First of all, transactional code against databases and messaging servers
+do meaningful work against the database or messaging server as *side effects*. Moreover, especially when
+using container-managed JTA transactions, the transactional context is *implicit*. To reason about the
+code, let us at least make that transactional state *explicit* when reasoning about it.
+
+This is true in general when reasoning about code: *implicit context* should be made *explicit* somehow
+when thinking about what the code does, as if this implicit context is an extra function parameter.
+That's a disadvantage of annotation-based transaction management: the transactional context is implicit,
+as compared to explicit function parameters.
+
+Consider the example of code that uses *Jakarta Persistence*. There's a lot of potentially *implicit state* when
+reasoning about such code. For example:
+* Does the code run inside an open `EntityManager`?
+* Related: does the code run inside a transaction, and, if so, is that a *resource-local or JTA transaction*?
+  * In case of a resource-local transaction, there must be an open `EntityManager`
+  * In case of a JTA transaction, is it potentially distributed over 2 or more transactional resources, supporting 2-phase-commit?
+    * In particular, [transactions in Quarkus](https://quarkus.io/guides/transaction) are not distributed, in spite of using JTA transactions
+  * In a Jakarta EE context (with EJBs), when using JTA transactions, are these transactions *container-managed or bean-managed*?
+  * Which *exceptions* lead to a transaction *rollback*?
+* Per *JPA entity*, what is its state?
+  * Is it *new*, *persisted*, *detached* or *removed*?
+  * To what extent has *associated data been loaded*?
+  * Is the *2nd level cache* being used?
+
+This is quite a lot of implicit program state that must be made explicit conceptually when reasoning about
+the code using Jakarta Persistence. We can *limit the scope* of all this implicit context by converting *JPA entity query results*
+into *deeply immutable Java object graphs*, after which we have far less implicit state, if any.
+
+Let's now consider *(transactional) message-driven beans*. To reason about the code, mind the following potentially implicit state:
+* a potentially running transaction (either container-managed or bean-managed or resource-local)
+  * mind rollback status as well; it might have been set to rollback-only
+  * mind exceptions and whether they lead to a transaction rollback
+
+As mentioned earlier, in an MDB message listener method we can use:
+* either a container-managed transaction (the default for MDBs),
+* or a bean-managed transaction,
+* or (maybe) a resource-local transaction (but that would require switching off JTA transaction management for the MDB)
+
+If we use JTA transactions (container-managed or bean-managed), we must *not* use any resource-local transaction management APIs,
+such as the transaction management functions in JDBC, JPA or JMS!
+
+In the case of container-managed transactions, the transaction includes the dequeue action (and a rollback undoes that as well).
+
+Depending on the runtime environment, the JTA transaction (whether container-managed or bean-managed) supports distributed
+transaction management over 2 or more transactional resources, using a 2-phase-commit protocol.
+
+To propagate a container-managed transaction to called code, that code should typically be (stateless) *session beans*.
+Keep the limitations of generated (transactional) *proxy objects* in mind, such as self-calls that are not intercepted by the proxy object.
+
+Note that in a Jakarta EE context much of the (transaction) behaviour can be configured using annotations or XML-based configuration
+in the deployment descriptor. Nowadays, annotations are mostly the norm, and deployment descriptors are hardly used anymore.
+
+One final remark about annotation-based transaction management: annotations can be hard to reason about
+in that annotation processing is explicit to the annotated code itself, and the scope of an annotation
+(such as a "transaction annotation") may not be obvious from the code. With many annotations in a
+Jakarta EE context, it is easy to exhaust the *annotation complexity budget*. That's why I am personally not
+a big fan of Lombok annotations (in an already annotation-rich environment).
