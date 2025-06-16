@@ -241,7 +241,7 @@ after which we have far less implicit state, if any.
 Let's now consider *(transactional) message-driven beans*. To reason about the code, mind the following potentially implicit state:
 * a potentially running transaction (either container-managed or bean-managed or resource-local)
   * mind rollback status as well; it might have been set to rollback-only
-  * mind exceptions and whether they lead to a transaction rollback
+  * mind exceptions and whether they lead to a transaction rollback (or even destruction of the MDB)
 
 As mentioned earlier, in an MDB message listener method we can use:
 * either a container-managed transaction (the default for MDBs and EJBs in general, see [BMT versus CMT](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#bean-managed-versus-container-managed-transaction-demarcation)),
