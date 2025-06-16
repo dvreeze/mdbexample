@@ -230,7 +230,7 @@ reasoning about such code. For example:
   * Which *exceptions* lead to a transaction *rollback*?
 * Per *JPA entity*, what is its state?
   * Is it *new*, *managed*, *detached* or *removed*?
-  * To what extent has *associated data been loaded*?
+  * To what extent has *associated data been loaded or saved*?
   * Is the *2nd level cache* being used?
 
 This is quite a lot of implicit program state that must be made explicit conceptually when reasoning about
