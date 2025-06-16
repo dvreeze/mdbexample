@@ -278,7 +278,7 @@ in the deployment descriptor. Nowadays, annotations are mostly the norm, and (st
 hardly used anymore.
 
 One final remark about annotation-based transaction management: annotations can be hard to reason about
-in that annotation processing is explicit to the annotated code itself, and the scope of an annotation
-(such as a "transaction annotation") may not be obvious from the code. With many annotations in a
+in that annotation processing is implicit and external to the annotated code itself, and the scope of an annotation
+(such as a "transaction annotation") may not be obvious from the code. With typically many annotations in a
 Jakarta EE context, it is easy to exhaust the *annotation complexity budget*. That's why I am personally not
 a big fan of Lombok annotations (in an already annotation-rich environment).
