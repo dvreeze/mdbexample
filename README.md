@@ -257,6 +257,10 @@ Also see [BMT versus CMT](https://jakarta.ee/specifications/enterprise-beans/4.0
 In the case of container-managed transactions, the transaction includes the message receipt action (and a rollback undoes that as well).
 See [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods).
 
+What happens on rollback of a message listener transaction that includes message receipt, in terms of
+message redelivery attempts, and the use of a backout queue (and dead letter queue)? That depends on the queue
+manager implementation and its configuration, in this case the configuration of MQ.
+
 Depending on the runtime environment, the JTA transaction (whether container-managed or bean-managed) supports distributed
 transaction management over 2 or more transactional resources, using a 2-phase-commit protocol. At least this
 is what the EJB specification expects. See
