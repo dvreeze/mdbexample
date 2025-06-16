@@ -249,19 +249,29 @@ As mentioned earlier, in an MDB message listener method we can use:
 * or (maybe) a resource-local transaction (but that would require switching off JTA transaction management for the MDB)
 
 If we use JTA transactions (container-managed or bean-managed), we must *not* use any resource-local transaction management APIs,
-such as the transaction management functions in JDBC, JPA or JMS!
+such as the transaction management functions in JDBC, JPA or JMS! See for example
+[EJBs using CMT](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#enterprise-beans-using-container-managed-transaction-demarcation).
 
-In the case of container-managed transactions, the transaction includes the dequeue action (and a rollback undoes that as well).
+In the case of container-managed transactions, the transaction includes the message receipt action (and a rollback undoes that as well).
+See [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods).
 
 Depending on the runtime environment, the JTA transaction (whether container-managed or bean-managed) supports distributed
-transaction management over 2 or more transactional resources, using a 2-phase-commit protocol.
+transaction management over 2 or more transactional resources, using a 2-phase-commit protocol. At least this
+is what the EJB specification expects. See
+[sample transaction scenarios](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#sample-scenarios).
 
 To propagate a container-managed transaction to called code, that code should typically be (stateless) *session beans*.
+See for example [sample transaction scenarios](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#sample-scenarios).
+
 Keep the limitations of generated (transactional) *proxy objects* in mind, such as self-calls that are not intercepted by the proxy object.
+Also mind the limitations imposed by proxy method generation on how to write the proxied class
+(extensible, default no-arg constructor etc.).
 
 Container-managed MDB listener method transactions can only use propagation "required" or "not-supported".
 Yet via calls to session EJBs (implicitly passing the same transactional context), a new transaction with
-propagation "requires-new" can be created, thus suspending the MDB transaction.
+propagation "requires-new" can be created, thus suspending the MDB transaction. See
+[CMT demarcation for message listener methods](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2858)
+and [CMT demarcation for business methods](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2755).
 
 Note that in a Jakarta EE context much of the (transaction) behaviour can be configured using annotations or XML-based configuration
 in the deployment descriptor. Nowadays, annotations are mostly the norm, and (standard Jakarta EE) deployment descriptors are
