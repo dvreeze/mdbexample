@@ -251,6 +251,8 @@ As mentioned earlier, in an MDB message listener method we can use:
 If we use JTA transactions (container-managed or bean-managed), we must *not* use any resource-local transaction management APIs,
 such as the transaction management functions in JDBC, JPA or JMS! See for example
 [EJBs using CMT](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#enterprise-beans-using-container-managed-transaction-demarcation).
+Also see [use of JMS in transactions](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#use-of-jakarta-messaging-apis-in-transactions).
+Also see [BMT versus CMT](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#bean-managed-versus-container-managed-transaction-demarcation).
 
 In the case of container-managed transactions, the transaction includes the message receipt action (and a rollback undoes that as well).
 See [MDB transaction context](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#transaction-context-of-message-driven-bean-methods).
