@@ -229,7 +229,7 @@ reasoning about such code. For example:
   * In a Jakarta EE context (with EJBs), when using JTA transactions, are these transactions *container-managed or bean-managed*?
   * Which *exceptions* lead to a transaction *rollback*?
 * Per *JPA entity*, what is its state?
-  * Is it *new*, *persisted*, *detached* or *removed*?
+  * Is it *new*, *managed*, *detached* or *removed*?
   * To what extent has *associated data been loaded*?
   * Is the *2nd level cache* being used?
 
