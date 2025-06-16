@@ -259,8 +259,13 @@ transaction management over 2 or more transactional resources, using a 2-phase-c
 To propagate a container-managed transaction to called code, that code should typically be (stateless) *session beans*.
 Keep the limitations of generated (transactional) *proxy objects* in mind, such as self-calls that are not intercepted by the proxy object.
 
+Container-managed MDB listener method transactions can only use propagation "required" or "not-supported".
+Yet via calls to session EJBs (implicitly passing the same transactional context), a new transaction with
+propagation "requires-new" can be created, thus suspending the MDB transaction.
+
 Note that in a Jakarta EE context much of the (transaction) behaviour can be configured using annotations or XML-based configuration
-in the deployment descriptor. Nowadays, annotations are mostly the norm, and deployment descriptors are hardly used anymore.
+in the deployment descriptor. Nowadays, annotations are mostly the norm, and (standard Jakarta EE) deployment descriptors are
+hardly used anymore.
 
 One final remark about annotation-based transaction management: annotations can be hard to reason about
 in that annotation processing is explicit to the annotated code itself, and the scope of an annotation
