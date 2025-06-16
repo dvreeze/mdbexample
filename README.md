@@ -244,7 +244,7 @@ Let's now consider *(transactional) message-driven beans*. To reason about the c
   * mind exceptions and whether they lead to a transaction rollback
 
 As mentioned earlier, in an MDB message listener method we can use:
-* either a container-managed transaction (the default for MDBs, see [BMT versus CMT](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#bean-managed-versus-container-managed-transaction-demarcation)),
+* either a container-managed transaction (the default for MDBs and EJBs in general, see [BMT versus CMT](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#bean-managed-versus-container-managed-transaction-demarcation)),
 * or a bean-managed transaction,
 * or (maybe) a resource-local transaction (but that would require switching off JTA transaction management for the MDB)
 
