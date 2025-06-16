@@ -273,9 +273,9 @@ Keep the limitations of generated (transactional) *proxy objects* in mind, such 
 Also mind the limitations imposed by proxy method generation on how to write the proxied class
 (extensible, default no-arg constructor etc.).
 
-Container-managed MDB listener method transactions can only use propagation "required" or "not-supported".
+Container-managed MDB listener method transactions can only use propagation `REQUIRED` or `NOT_SUPPORTED`.
 Yet via calls to session EJBs (implicitly passing the same transactional context), a new transaction with
-propagation "requires-new" can be created, thus suspending the MDB transaction. See
+propagation `REQUIRES_NEW` can be created, thus suspending the MDB transaction. See
 [CMT demarcation for message listener methods](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2858)
 and [CMT demarcation for business methods](https://jakarta.ee/specifications/enterprise-beans/4.0/jakarta-enterprise-beans-spec-core-4.0#a2755).
 
@@ -288,3 +288,10 @@ in that annotation processing is implicit and external to the annotated code its
 (such as a "transaction annotation") may not be obvious from the code. With typically many annotations in a
 Jakarta EE context, it is easy to exhaust the *annotation complexity budget*. That's why I am personally not
 a big fan of Lombok annotations (in an already annotation-rich environment).
+
+Talking about annotations, transactional MDB listener methods do not interoperate well with the
+[MP Fault Tolerance Retry](https://download.eclipse.org/microprofile/microprofile-fault-tolerance-4.0/microprofile-fault-tolerance-spec-4.0.html#retry)
+annotation. Inside a message listener JTA transaction, a `Retry` would be problematic, because:
+* the transaction duration should be reasonably small, for example to avoid deadlocks
+* a `Retry` should start with clean/clear program state, but inside a transaction, especially when using JPA, there is "dirty state"
+* what happens if a transaction is marked for rollback, but still a `Retry` is handled inside the transaction marked for rollback?
